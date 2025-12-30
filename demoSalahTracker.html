@@ -1,0 +1,1030 @@
+
+ <!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>متابعة الصلوات</title>
+  <style>
+  
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: "Cairo", sans-serif;
+      background: linear-gradient(135deg, #8B7355 0%, #A0826D 50%, #B8956A 100%);
+      color: #3E2723;
+      direction: rtl;
+      min-height: 100vh;
+      padding: 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 115, 85, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      background: linear-gradient(145deg, #FFF8E7 0%, #F5E6D3 100%);
+      padding: 40px;
+      border-radius: 25px;
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.5) inset,
+        0 2px 4px rgba(255,255,255,0.8) inset;
+      overflow-x: auto;
+      position: relative;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+    }
+
+    .container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, 
+        transparent,
+        #D4AF37,
+        #FFD700,
+        #D4AF37,
+        transparent
+      );
+      border-radius: 25px 25px 0 0;
+    }
+
+    .header { 
+      text-align: center; 
+      margin-bottom: 35px;
+      position: relative;
+    }
+    
+    h1 { 
+      font-size: 2.8em; 
+      margin-bottom: 12px; 
+      color: #5D4037;
+      text-shadow: 
+        2px 2px 4px rgba(0,0,0,0.1),
+        0 0 20px rgba(212, 175, 55, 0.3);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    
+    .header p { 
+      color: #6D4C41;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+    
+    .last-info {
+      margin-top: 8px;
+      font-size: 15px;
+      color: #B8860B;
+      font-weight: 600;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
+
+    .quran-verse {
+      background: linear-gradient(135deg, #E8DCC8 0%, #D7CCC8 100%);
+      padding: 25px;
+      border-radius: 20px;
+      margin: 25px 0;
+      text-align: center;
+      font-size: 1.2em;
+      line-height: 2;
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.2),
+        0 0 0 1px rgba(255,255,255,0.6) inset,
+        0 2px 4px rgba(255,255,255,0.9) inset;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .quran-verse::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      background: linear-gradient(135deg, #D4AF37, #FFD700, #D4AF37);
+      border-radius: 20px;
+      z-index: -1;
+    }
+
+    .verse-text { 
+      font-size: 1.4em; 
+      margin-bottom: 12px; 
+      font-weight: 700; 
+      color: #4E342E;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+    }
+    
+    .verse-reference { 
+      font-size: 0.95em; 
+      color: #5D4037;
+      font-weight: 600;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin: 30px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #FFF8E7 0%, #E8DCC8 100%);
+      padding: 25px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.15),
+        0 0 0 1px rgba(255,255,255,0.6) inset,
+        0 2px 4px rgba(255,255,255,0.9) inset;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, 
+        transparent, 
+        rgba(255, 255, 255, 0.4), 
+        transparent
+      );
+      transition: left 0.5s;
+    }
+
+    .stat-card:hover::before {
+      left: 100%;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px) scale(1.02);
+      box-shadow: 
+        0 15px 40px rgba(212, 175, 55, 0.4),
+        0 0 0 1px rgba(255,255,255,0.8) inset,
+        0 2px 6px rgba(255,255,255,1) inset;
+      border-color: rgba(212, 175, 55, 0.6);
+    }
+
+    .stat-number { 
+      font-size: 2.5em; 
+      font-weight: 700; 
+      margin-bottom: 8px; 
+      color: #4E342E;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #6D4C41, #D4AF37);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label { 
+      font-size: 0.95em; 
+      color: #5D4037;
+      font-weight: 600;
+    }
+
+    .tracker-wrapper {
+      background: linear-gradient(145deg, #FFF8E7, #E8DCC8);
+      padding: 30px;
+      border-radius: 20px;
+      margin: 25px 0;
+      overflow-x: auto;
+      box-shadow: 
+        0 10px 30px rgba(0,0,0,0.2),
+        0 0 0 1px rgba(255,255,255,0.6) inset,
+        0 2px 4px rgba(255,255,255,0.9) inset;
+      border: 2px solid rgba(212, 175, 55, 0.3);
+    }
+
+    .months { display: flex; gap: 4px; margin-bottom: 10px; margin-right: 60px; }
+    .month-label {
+      font-size: 13px;
+      color: #6D4C41;
+      text-align: center;
+      font-weight: 700;
+      min-width: 0;
+      flex-shrink: 0;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
+
+    .heatmap-wrapper { display: flex; gap: 12px; }
+    .days { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px; 
+      font-size: 11px; 
+      color: #6D4C41; 
+      font-weight: 600;
+    }
+    .day-label { 
+      height: 18px; 
+      display: flex; 
+      align-items: center;
+      text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
+    }
+
+    #heatmap { display: flex; gap: 4px; flex-wrap: nowrap; }
+
+    .week-column { display: flex; flex-direction: column; gap: 4px; }
+
+    .day {
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(145deg, #E8DCC8, #D7CCC8);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(161, 136, 127, 0.4);
+      box-shadow: 
+        0 2px 4px rgba(0,0,0,0.1),
+        0 0 0 1px rgba(255,255,255,0.5) inset;
+      position: relative;
+    }
+
+    .day::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 4px;
+      background: linear-gradient(135deg, 
+        rgba(255,255,255,0.6) 0%, 
+        transparent 50%, 
+        rgba(0,0,0,0.1) 100%
+      );
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .day:hover::after {
+      opacity: 1;
+    }
+
+    .day:hover {
+      transform: scale(1.25) translateY(-2px);
+      box-shadow: 
+        0 6px 12px rgba(139, 115, 85, 0.4),
+        0 0 0 2px rgba(212, 175, 55, 0.5) inset,
+        0 2px 4px rgba(255,255,255,1) inset;
+      border-color: #D4AF37;
+      z-index: 10;
+    }
+
+    .l1 { 
+      background: linear-gradient(145deg, #D4C5AF, #C9B89A);
+      box-shadow: 
+        0 2px 6px rgba(0,0,0,0.15),
+        0 0 0 1px rgba(255,255,255,0.6) inset;
+    }
+    
+    .l2 { 
+      background: linear-gradient(145deg, #C5B096, #B5A084);
+      box-shadow: 
+        0 3px 8px rgba(0,0,0,0.2),
+        0 0 0 1px rgba(255,255,255,0.6) inset;
+    }
+    
+    .l3 { 
+      background: linear-gradient(145deg, #B09880, #A0886E);
+      box-shadow: 
+        0 4px 10px rgba(0,0,0,0.25),
+        0 0 0 1px rgba(255,255,255,0.6) inset,
+        0 0 8px rgba(160, 136, 110, 0.3);
+    }
+    
+    .l4 { 
+      background: linear-gradient(145deg, #9B8268, #8B7258);
+      border-color: #6D4C41;
+      box-shadow: 
+        0 5px 15px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.7) inset,
+        0 0 12px rgba(139, 114, 88, 0.5);
+    }
+    
+    .l5 { 
+      background: linear-gradient(145deg, #FFD700, #D4AF37, #B8860B);
+      border-color: #B8860B;
+      animation: pulse 2s ease-in-out infinite, shine 3s linear infinite;
+      box-shadow: 
+        0 6px 20px rgba(212, 175, 55, 0.6),
+        0 0 0 2px rgba(255,255,255,0.8) inset,
+        0 0 20px rgba(255, 215, 0, 0.8),
+        0 2px 4px rgba(255,255,255,1) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .l5::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.5),
+        transparent
+      );
+      transform: rotate(45deg);
+      animation: shimmer 3s linear infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .empty-day {
+      background: linear-gradient(145deg, #EFEBE9, #E0D5C7);
+      border: 1px solid rgba(215, 204, 200, 0.6);
+      cursor: default;
+      box-shadow: 
+        0 1px 2px rgba(0,0,0,0.05) inset,
+        0 0 0 1px rgba(255,255,255,0.3) inset;
+    }
+
+    .month-separator {
+      border-left: 3px solid rgba(212, 175, 55, 0.4);
+      padding-left: 2px;
+    }
+
+    .today {
+      outline: 3px solid #FFD700;
+      outline-offset: 3px;
+      box-shadow: 
+        0 0 20px rgba(255, 215, 0, 0.9),
+        0 0 40px rgba(255, 215, 0, 0.5),
+        0 6px 12px rgba(0,0,0,0.3);
+      animation: glow 2s ease-in-out infinite;
+      z-index: 100;
+    }
+
+    @keyframes glow {
+      0%, 100% { 
+        box-shadow: 
+          0 0 20px rgba(255, 215, 0, 0.9),
+          0 0 40px rgba(255, 215, 0, 0.5),
+          0 6px 12px rgba(0,0,0,0.3);
+      }
+      50% { 
+        box-shadow: 
+          0 0 30px rgba(255, 215, 0, 1),
+          0 0 60px rgba(255, 215, 0, 0.7),
+          0 8px 16px rgba(0,0,0,0.4);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shine {
+      0% { filter: brightness(1) saturate(1); }
+      50% { filter: brightness(1.2) saturate(1.3); }
+      100% { filter: brightness(1) saturate(1); }
+    }
+
+    .legend { 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 10px; 
+      margin-top: 25px; 
+      font-size: 13px; 
+      color: #6D4C41;
+      font-weight: 600;
+    }
+    
+    .legend .box { 
+      width: 18px; 
+      height: 18px; 
+      border-radius: 4px; 
+      box-shadow: 
+        0 2px 4px rgba(0,0,0,0.1),
+        0 0 0 1px rgba(255,255,255,0.5) inset;
+      transition: all 0.3s;
+    }
+
+    .legend .box:hover {
+      transform: scale(1.3);
+      box-shadow: 
+        0 4px 8px rgba(0,0,0,0.2),
+        0 0 0 1px rgba(255,255,255,0.7) inset;
+    }
+    
+    .l0 { background: linear-gradient(145deg, #E8DCC8, #D7CCC8); }
+
+    #tooltip {
+      position: fixed;
+      background: linear-gradient(145deg, #4E342E, #3E2723);
+      color: #FFF8E7;
+      padding: 12px 16px;
+      font-size: 14px;
+      border-radius: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 10000;
+      box-shadow: 
+        0 8px 24px rgba(0,0,0,0.6),
+        0 0 0 1px rgba(212, 175, 55, 0.5),
+        0 0 20px rgba(212, 175, 55, 0.3);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      backdrop-filter: blur(10px);
+      font-weight: 600;
+    }
+
+    .buttons { 
+      display: flex; 
+      gap: 15px; 
+      justify-content: center; 
+      margin-top: 25px; 
+    }
+    
+    button {
+      background: linear-gradient(145deg, #8B7355, #6D4C41);
+      color: #FFF8E7;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 
+        0 6px 20px rgba(0,0,0,0.3),
+        0 0 0 1px rgba(255,255,255,0.3) inset,
+        0 2px 4px rgba(255,255,255,0.5) inset;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    button:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 
+        0 10px 30px rgba(212, 175, 55, 0.5),
+        0 0 0 1px rgba(255,255,255,0.5) inset,
+        0 2px 6px rgba(255,255,255,0.7) inset;
+      background: linear-gradient(145deg, #6D4C41, #5D4037);
+    }
+
+    button:active {
+      transform: translateY(-2px) scale(1.02);
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(78, 52, 46, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .overlay-content {
+      background: linear-gradient(145deg, #FFF8E7, #F5E6D3);
+      color: #3E2723;
+      padding: 40px;
+      border-radius: 25px;
+      text-align: center;
+      max-width: 85%;
+      box-shadow: 
+        0 20px 60px rgba(0,0,0,0.8),
+        0 0 0 2px rgba(212, 175, 55, 0.5),
+        0 0 40px rgba(212, 175, 55, 0.3);
+      border: 3px solid rgba(255, 215, 0, 0.6);
+      animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .overlay-content::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 215, 0, 0.1) 0%, transparent 70%);
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    @keyframes scaleIn {
+      from { 
+        transform: scale(0.8); 
+        opacity: 0;
+      }
+      to { 
+        transform: scale(1); 
+        opacity: 1;
+      }
+    }
+
+    .overlay-content #overlayText {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      color: #4E342E;
+      line-height: 2;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+      position: relative;
+      z-index: 1;
+    }
+
+    .overlay-content #overlayRef {
+      font-size: 1.1em;
+      color: #6D4C41;
+      margin-bottom: 25px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .overlay-content button {
+      margin-top: 20px;
+      background: linear-gradient(145deg, #C62828, #B71C1C);
+      border: none;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      color: white;
+      font-weight: 700;
+      box-shadow: 
+        0 6px 20px rgba(198, 40, 40, 0.4),
+        0 0 0 1px rgba(255,255,255,0.3) inset;
+      position: relative;
+      z-index: 1;
+    }
+
+    .overlay-content button:hover {
+      background: linear-gradient(145deg, #B71C1C, #A50000);
+      box-shadow: 
+        0 8px 25px rgba(198, 40, 40, 0.6),
+        0 0 0 1px rgba(255,255,255,0.5) inset;
+    }
+
+    @media (max-width: 768px) {
+      h1 { font-size: 2em; }
+      .day { width: 14px; height: 14px; }
+      .day-label { height: 14px; font-size: 10px; }
+      .month-label { font-size: 11px; }
+      .quran-verse { font-size: 1em; padding: 20px; }
+      .container { padding: 25px; }
+      .stat-card { padding: 20px; }
+    }
+
+    /* تأثيرات إضافية للسلاسة */
+    * {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    ::selection {
+      background: rgba(212, 175, 55, 0.3);
+      color: #3E2723;
+    }
+
+    ::-webkit-scrollbar {
+      width: 10px;
+      height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #E8DCC8;
+      border-radius: 10px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(145deg, #B8860B, #D4AF37);
+      border-radius: 10px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(145deg, #D4AF37, #FFD700);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📿 متابعة الصلوات</h1>
+    <p>حافظ على صلواتك واجعل عامك مليئاً بالخير - <span id="currentYear"></span></p>
+  </div>
+<p id="welcomeText"></p>
+<div class="header">
+  <p id="welcomeText"></p>
+  <p id="lastPrayerInfo" class="last-info"></p>
+</div>
+
+
+  <div class="quran-verse">
+    <div class="verse-text">
+      "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
+    </div>
+    <div class="verse-reference">سورة النساء - آية 103</div>
+  </div>
+
+  <div class="stats" id="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="totalPrayers">0</div>
+      <div class="stat-label">إجمالي الصلوات</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="perfectDays">0</div>
+      <div class="stat-label">أيام كاملة (5 صلوات)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="currentStreak">0</div>
+      <div class="stat-label">أيام متتالية</div>
+    </div>
+  </div>
+
+  <div class="tracker-wrapper">
+    <div class="months" id="monthsHeader"></div>
+    <div class="heatmap-wrapper">
+      <div class="days">
+        <div class="day-label">السبت</div>
+        <div class="day-label">الأحد</div>
+        <div class="day-label">الاثنين</div>
+        <div class="day-label">الثلاثاء</div>
+        <div class="day-label">الأربعاء</div>
+        <div class="day-label">الخميس</div>
+        <div class="day-label">الجمعة</div>
+      </div>
+
+      <div id="heatmap"></div>
+    </div>
+
+    <div class="legend">
+      <span>أقل</span>
+      <div class="box l0"></div>
+      <div class="box l1"></div>
+      <div class="box l2"></div>
+      <div class="box l3"></div>
+      <div class="box l4"></div>
+      <div class="box l5"></div>
+      <span>أكثر (5 صلوات)</span>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button onclick="resetData()">🔄 مسح البيانات</button>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="overlayAyah" class="overlay">
+  <div class="overlay-content">
+    <div id="overlayText"></div>
+    <div id="overlayRef"></div>
+    <button onclick="closeOverlay()">إغلاق</button>
+  </div>
+</div>
+
+<script>
+ 
+const city = "Cairo";
+const country = "EG";
+const method = 5; // طريقة الحساب (مثل 5 = Egyptian General Authority)
+const prayers = ["الفجر", "الظهر", "العصر", "المغرب", "العشاء"];
+const ayat = [
+  { text: "وَأَقِمِ الصَّلَاةَ لِذِكْرِي", ref: "سورة طه: 14" },
+  { text: "إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ", ref: "سورة العنكبوت: 45" },
+  { text: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ * الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ", ref: "سورة المؤمنون: 1-2" },
+  { text: "وَالَّذِينَ هُمْ عَلَىٰ صَلَوَاتِهِمْ يُحَافِظُونَ", ref: "سورة المعارج: 34" },
+  { text: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ", ref: "سورة البقرة: 238" },
+  { text: "الصلاة عماد الدين، من أقامها فقد أقام الدين، ومن هدمها فقد هدم الدين", ref: "حديث شريف" },
+  { text: "بين الرجل وبين الشرك والكفر ترك الصلاة", ref: "رواه مسلم" },
+  { text: "أول ما يحاسب عليه العبد يوم القيامة الصلاة، فإن صلحت صلح سائر عمله", ref: "رواه الطبراني" },
+  { text: "من حافظ عليها كانت له نورًا وبرهانًا ونجاة يوم القيامة", ref: "رواه أحمد" },
+  { text: "ليس بين العبد والجنة إلا الصلاة", ref: "حديث شريف" }
+];
+
+const heatmap = document.getElementById("heatmap");
+const tooltip = document.getElementById("tooltip");
+const monthsHeader = document.getElementById("monthsHeader");
+const year = new Date().getFullYear();
+
+let userName = localStorage.getItem("userName");
+if(!userName){
+  userName = prompt("من فضلك أدخل اسمك 🙂");
+  if(userName && userName.trim() !== ""){
+    localStorage.setItem("userName", userName.trim());
+  } else {
+    userName = "ضيف";
+  }
+}
+document.getElementById("welcomeText").textContent = `مرحبًا بك، ${userName} 🌸`;
+
+// --- دالة جلب أوقات الصلاة ---
+async function getPrayerTimes() {
+  try {
+    const today = new Date();
+    const dateStr = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
+    const url = `https://api.aladhan.com/v1/timingsByCity/${dateStr}?city=${city}&country=${country}&method=${method}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const timings = data.data.timings;
+    return {
+      "الفجر": timings.Fajr,
+      "الظهر": timings.Dhuhr,
+      "العصر": timings.Asr,
+      "المغرب": timings.Maghrib,
+      "العشاء": timings.Isha
+    };
+  } catch (error) {
+    console.error("خطأ في جلب أوقات الصلاة:", error);
+    return null;
+  }
+}
+
+// تحويل وقت "HH:MM" إلى دقائق
+function timeStrToMinutes(timeStr) {
+  if (!timeStr) return 0;
+  timeStr = timeStr.replace(/[^0-9:]/g, "");
+  let [hour, minute] = timeStr.split(":").map(Number);
+  return hour * 60 + minute;
+}
+
+// --- تسجيل الصلاة حسب الوقت ---
+async function recordPrayer(dateKeyLocal) {
+  const now = new Date();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  let lvl = parseInt(localStorage.getItem(dateKeyLocal) || 0);
+
+  const prayersTimesObj = await getPrayerTimes();
+  if(!prayersTimesObj) return;
+
+  const prayerPeriods = [
+    { name: "الفجر", start: timeStrToMinutes(prayersTimesObj["الفجر"]), end: timeStrToMinutes(prayersTimesObj["الظهر"]) },
+    { name: "الظهر", start: timeStrToMinutes(prayersTimesObj["الظهر"]), end: timeStrToMinutes(prayersTimesObj["العصر"]) },
+    { name: "العصر", start: timeStrToMinutes(prayersTimesObj["العصر"]), end: timeStrToMinutes(prayersTimesObj["المغرب"]) },
+    { name: "المغرب", start: timeStrToMinutes(prayersTimesObj["المغرب"]), end: timeStrToMinutes(prayersTimesObj["العشاء"]) },
+    { name: "العشاء", start: timeStrToMinutes(prayersTimesObj["العشاء"]), end: 24*60 + timeStrToMinutes(prayersTimesObj["الفجر"]) }
+  ];
+
+  let currentPrayerIndex = -1;
+  for (let i=0; i<prayerPeriods.length; i++) {
+    const p = prayerPeriods[i];
+    if (p.name !== "العشاء" && nowMinutes >= p.start && nowMinutes < p.end) {
+      currentPrayerIndex = i; break;
+    }
+    if (p.name === "العشاء" && (nowMinutes >= p.start || nowMinutes < timeStrToMinutes(prayersTimesObj["الفجر"]))) {
+      currentPrayerIndex = i; break;
+    }
+  }
+
+  if(currentPrayerIndex === -1){
+    alert("⏳ لا يمكنك تسجيل أي صلاة الآن."); return;
+  }
+
+  if(lvl > currentPrayerIndex){
+    alert(`✔️ لقد سجلت صلوات لاحقة بالفعل، لا يمكن تسجيل هذه الصلاة.`); return;
+  }
+
+  lvl = currentPrayerIndex + 1;
+  localStorage.setItem(dateKeyLocal, lvl);
+  renderCell(dateKeyLocal, lvl);
+
+  if(lvl === 5){
+    const ayah = ayat[Math.floor(Math.random() * ayat.length)];
+    document.getElementById("overlayText").textContent = `"${ayah.text}"`;
+    document.getElementById("overlayRef").textContent = ayah.ref;
+    document.getElementById("overlayAyah").style.display = "flex";
+  }
+
+  tooltip.style.opacity = 1;
+  const timeString = now.toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"});
+  tooltip.innerHTML = `<strong>تم تسجيل صلاة</strong><br>${prayers[currentPrayerIndex]}<br>🕒 ${timeString}`;
+  updateStats();
+}
+
+// --- فحص الصلوات الفائتة ---
+async function checkMissedPrayers(){
+  const prayersTimesObj = await getPrayerTimes();
+  if(!prayersTimesObj) return;
+  const now = new Date();
+  const todayKey = now.toISOString().split("T")[0];
+  const missed = [];
+  const nowMinutes = now.getHours()*60 + now.getMinutes();
+
+  prayers.forEach((prayer, index)=>{
+    const level = parseInt(localStorage.getItem(todayKey)||0);
+    const prayerTime = timeStrToMinutes(prayersTimesObj[prayer]);
+    if(index >= level && nowMinutes > prayerTime){
+      missed.push(prayer);
+    }
+  });
+
+  if(missed.length > 0){
+    alert(`⚠️ لم تسجل الصلوات التالية اليوم: ${missed.join(", ")}`);
+  }
+}
+setInterval(checkMissedPrayers, 10*60*1000);
+
+// --- بناء الـ heatmap ---
+const months = [
+  { name: "يناير", days: 31 },
+  { name: "فبراير", days: (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28 },
+  { name: "مارس", days: 31 },
+  { name: "أبريل", days: 30 },
+  { name: "مايو", days: 31 },
+  { name: "يونيو", days: 30 },
+  { name: "يوليو", days: 31 },
+  { name: "أغسطس", days: 31 },
+  { name: "سبتمبر", days: 30 },
+  { name: "أكتوبر", days: 31 },
+  { name: "نوفمبر", days: 30 },
+  { name: "ديسمبر", days: 31 }
+];
+
+let currentDate = new Date();
+let weekColumns = [];
+let currentWeek = [];
+let startDay = currentDate.getDay();
+let startOffset = startDay === 6 ? 0 : startDay + 1;
+
+for(let i=0;i<startOffset;i++){
+  const emptyCell = document.createElement("div");
+  emptyCell.className="day empty-day";
+  currentWeek.push(emptyCell);
+}
+
+months.forEach((month, mIndex)=>{
+  for(let i=0;i<month.days;i++){
+    const cell = document.createElement("div");
+    cell.className="day";
+    const dateKey = currentDate.toISOString().split("T")[0];
+    let level = parseInt(localStorage.getItem(dateKey)||0);
+
+    renderCell(dateKey, level, cell);
+
+    cell.addEventListener("click", ()=> recordPrayer(dateKey));
+
+    cell.dataset.date = dateKey;
+    cell.addEventListener("mouseenter", ()=>{
+      const level = parseInt(localStorage.getItem(dateKey)||0);
+      tooltip.style.opacity = 1;
+      const date = new Date(dateKey);
+      const dayName = date.toLocaleDateString("ar-EG", {weekday:'long'});
+      const dayNum = date.toLocaleDateString("ar-EG", {day:'numeric'});
+      const monthName = date.toLocaleDateString("ar-EG", {month:'long'});
+
+      let prayerText = "";
+      if(level === 0) prayerText = "لا توجد صلوات مسجلة";
+      else if(level === 1) prayerText = "صلاة واحدة";
+      else if(level === 2) prayerText = "صلاتان";
+      else if(level === 3) prayerText = "3 صلوات";
+      else if(level === 4) prayerText = "4 صلوات";
+      else if(level === 5) prayerText = "5 صلوات ✓";
+
+      tooltip.innerHTML=`<strong>${dayName} ${dayNum} ${monthName}</strong><br>${prayerText}`;
+    });
+    cell.addEventListener("mousemove",(e)=>{
+      tooltip.style.left=e.pageX+10+"px";
+      tooltip.style.top=e.pageY+10+"px";
+    });
+    cell.addEventListener("mouseleave",()=>{tooltip.style.opacity=0;});
+
+    currentWeek.push(cell);
+    if(currentWeek.length===7){
+      weekColumns.push(currentWeek);
+      currentWeek=[];
+    }
+    currentDate.setDate(currentDate.getDate()+1);
+  }
+});
+
+if(currentWeek.length>0){
+  while(currentWeek.length<7){
+    const emptyCell = document.createElement("div");
+    emptyCell.className="day empty-day";
+    currentWeek.push(emptyCell);
+  }
+  weekColumns.push(currentWeek);
+}
+
+weekColumns.forEach(week=>{
+  const weekCol=document.createElement("div");
+  weekCol.className="week-column";
+  week.forEach(day=>weekCol.appendChild(day));
+  heatmap.appendChild(weekCol);
+});
+
+// --- دوال مساعدة ---
+function renderCell(dateKey, level, cell=null){
+  if(!cell){
+    cell = [...document.querySelectorAll(".day")].find(c=>c.dataset.date===dateKey);
+  }
+  if(!cell) return;
+  cell.className="day";
+  if(level>0) cell.classList.add("l"+level);
+}
+
+function updateStats() {
+  let totalPrayers = 0;
+  let perfectDays = 0;
+  let currentStreak = 0;
+  const today = new Date();
+  let checkDate = new Date(`${year}-01-01`);
+  while(checkDate <= today){
+    const dateKey = checkDate.toISOString().split("T")[0];
+    const level = parseInt(localStorage.getItem(dateKey) || 0);
+    totalPrayers += level;
+    if(level === 5){ perfectDays++; currentStreak++; }
+    else if(checkDate < today){ currentStreak = 0; }
+    checkDate.setDate(checkDate.getDate()+1);
+  }
+  document.getElementById('totalPrayers').textContent = totalPrayers;
+  document.getElementById('perfectDays').textContent = perfectDays;
+  document.getElementById('currentStreak').textContent = currentStreak;
+}
+
+function resetData(){
+  if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+function closeOverlay() {
+  document.getElementById("overlayAyah").style.display = "none";
+}
+
+updateStats();
+checkMissedPrayers();
+
+
+</script>
+</body>
+</html>
+ 
