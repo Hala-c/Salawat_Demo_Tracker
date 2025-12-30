@@ -1,0 +1,92 @@
+ <!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="style.css">
+  <title>متابعة الصلوات</title>
+
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>📿 متابعة الصلوات</h1>
+    <p>حافظ على صلواتك واجعل عامك مليئاً بالخير - <span id="currentYear"></span></p>
+  </div>
+<p id="welcomeText"></p>
+<div class="header">
+  <p id="welcomeText"></p>
+  <p id="lastPrayerInfo" class="last-info"></p>
+</div>
+
+
+  <div class="quran-verse">
+    <div class="verse-text">
+      "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
+    </div>
+    <div class="verse-reference">سورة النساء - آية 103</div>
+  </div>
+
+  <div class="stats" id="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="totalPrayers">0</div>
+      <div class="stat-label">إجمالي الصلوات</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="perfectDays">0</div>
+      <div class="stat-label">أيام كاملة (5 صلوات)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="currentStreak">0</div>
+      <div class="stat-label">أيام متتالية</div>
+    </div>
+  </div>
+
+  <div class="tracker-wrapper">
+    <div class="months" id="monthsHeader"></div>
+    <div class="heatmap-wrapper">
+      <div class="days">
+        <div class="day-label">السبت</div>
+        <div class="day-label">الأحد</div>
+        <div class="day-label">الاثنين</div>
+        <div class="day-label">الثلاثاء</div>
+        <div class="day-label">الأربعاء</div>
+        <div class="day-label">الخميس</div>
+        <div class="day-label">الجمعة</div>
+      </div>
+
+      <div id="heatmap"></div>
+    </div>
+
+    <div class="legend">
+      <span>أقل</span>
+      <div class="box l0"></div>
+      <div class="box l1"></div>
+      <div class="box l2"></div>
+      <div class="box l3"></div>
+      <div class="box l4"></div>
+      <div class="box l5"></div>
+      <span>أكثر (5 صلوات)</span>
+    </div>
+  </div>
+
+  <div class="buttons">
+    <button onclick="resetData()">🔄 مسح البيانات</button>
+  </div>
+</div>
+
+<div id="tooltip"></div>
+
+<div id="overlayAyah" class="overlay">
+  <div class="overlay-content">
+    <div id="overlayText"></div>
+    <div id="overlayRef"></div>
+    <button onclick="closeOverlay()">إغلاق</button>
+  </div>
+</div>
+
+ 
+<script src="script.js"></script>
+
+</body>
+</html>
