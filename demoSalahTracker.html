@@ -1,17 +1,15 @@
 
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>متابعة الصلوات</title>
   <style>
-  
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
     
     body {
-      font-family: "Cairo", sans-serif;
+      font-family: Arial, Helvetica, sans-serif;
       background: linear-gradient(135deg, #8B7355 0%, #A0826D 50%, #B8956A 100%);
       color: #3E2723;
       direction: rtl;
@@ -99,6 +97,29 @@
       text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
     }
 
+    .prayer-time-info {
+      background: linear-gradient(135deg, #E8DCC8 0%, #D7CCC8 100%);
+      padding: 15px 25px;
+      border-radius: 15px;
+      margin: 15px 0;
+      text-align: center;
+      font-size: 1em;
+      line-height: 1.6;
+      box-shadow: 
+        0 5px 15px rgba(0,0,0,0.15),
+        0 0 0 1px rgba(255,255,255,0.6) inset;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .current-prayer {
+      color: #B8860B;
+      font-weight: 700;
+      font-size: 1.1em;
+    }
+
     .quran-verse {
       background: linear-gradient(135deg, #E8DCC8 0%, #D7CCC8 100%);
       padding: 25px;
@@ -106,7 +127,7 @@
       margin: 25px 0;
       text-align: center;
       font-size: 1.2em;
-      line-height: 2;
+      line-height: 1.8;
       box-shadow: 
         0 10px 30px rgba(0,0,0,0.2),
         0 0 0 1px rgba(255,255,255,0.6) inset,
@@ -224,7 +245,17 @@
       border: 2px solid rgba(212, 175, 55, 0.3);
     }
 
-    .months { display: flex; gap: 4px; margin-bottom: 10px; margin-right: 60px; }
+    .months { 
+      display: flex; 
+      gap: 4px; 
+      margin-bottom: 20px; 
+      justify-content: flex-start;
+      padding-right: 60px;
+      position: relative;
+      flex-wrap: nowrap;
+      overflow-x: visible;
+    }
+    
     .month-label {
       font-size: 13px;
       color: #6D4C41;
@@ -233,7 +264,25 @@
       min-width: 0;
       flex-shrink: 0;
       text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+      padding: 0 5px;
+      position: relative;
     }
+    
+     .month-separator {
+      position: relative;
+    }
+    
+    .month-separator::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      right: -2px;
+      transform: translateY(-50%);
+      height: 60%;
+      width: 2px;
+      background: rgba(212, 175, 55, 0.5);
+      border-radius: 1px;
+    } 
 
     .heatmap-wrapper { display: flex; gap: 12px; }
     .days { 
@@ -243,6 +292,7 @@
       font-size: 11px; 
       color: #6D4C41; 
       font-weight: 600;
+      flex-shrink: 0;
     }
     .day-label { 
       height: 18px; 
@@ -251,9 +301,19 @@
       text-shadow: 1px 1px 1px rgba(255,255,255,0.8);
     }
 
-    #heatmap { display: flex; gap: 4px; flex-wrap: nowrap; }
+    #heatmap { 
+      display: flex; 
+      gap: 4px; 
+      flex-wrap: nowrap;
+      position: relative;
+    }
 
-    .week-column { display: flex; flex-direction: column; gap: 4px; }
+    .week-column { 
+      display: flex; 
+      flex-direction: column; 
+      gap: 4px;
+      position: relative;
+    }
 
     .day {
       width: 18px;
@@ -375,9 +435,30 @@
         0 0 0 1px rgba(255,255,255,0.3) inset;
     }
 
-    .month-separator {
-      border-left: 3px solid rgba(212, 175, 55, 0.4);
-      padding-left: 2px;
+    /* أيام قادمة (مستقبلية) */
+    .future-day {
+      background: linear-gradient(145deg, #F5F5F5, #EEEEEE);
+      border: 1px dashed #BDBDBD;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .future-day:hover {
+      transform: none !important;
+      box-shadow: 
+        0 1px 2px rgba(0,0,0,0.05) inset !important,
+        0 0 0 1px rgba(255,255,255,0.3) inset !important;
+    }
+
+    /* أيام ماضية فقط للعرض */
+    .past-day {
+      cursor: pointer;
+    }
+
+    /* يوم اليوم فقط للتسجيل */
+    .today-active {
+      cursor: pointer;
+      animation: glow 2s ease-in-out infinite;
     }
 
     .today {
@@ -387,9 +468,8 @@
         0 0 20px rgba(255, 215, 0, 0.9),
         0 0 40px rgba(255, 215, 0, 0.5),
         0 6px 12px rgba(0,0,0,0.3);
-      animation: glow 2s ease-in-out infinite;
       z-index: 100;
-    }
+    } 
 
     @keyframes glow {
       0%, 100% { 
@@ -447,6 +527,7 @@
     
     .l0 { background: linear-gradient(145deg, #E8DCC8, #D7CCC8); }
 
+    /* =========== تعديل الـ tooltip =========== */
     #tooltip {
       position: fixed;
       background: linear-gradient(145deg, #4E342E, #3E2723);
@@ -465,6 +546,8 @@
       border: 1px solid rgba(212, 175, 55, 0.4);
       backdrop-filter: blur(10px);
       font-weight: 600;
+      max-width: 220px;
+      text-align: center;
     }
 
     .buttons { 
@@ -638,12 +721,8 @@
       .quran-verse { font-size: 1em; padding: 20px; }
       .container { padding: 25px; }
       .stat-card { padding: 20px; }
-    }
-
-    /* تأثيرات إضافية للسلاسة */
-    * {
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
+      .months { padding-right: 50px; }
+      #tooltip { font-size: 12px; padding: 8px 12px; max-width: 180px; }
     }
 
     ::selection {
@@ -678,18 +757,20 @@
     <h1>📿 متابعة الصلوات</h1>
     <p>حافظ على صلواتك واجعل عامك مليئاً بالخير - <span id="currentYear"></span></p>
   </div>
-<p id="welcomeText"></p>
-<div class="header">
   <p id="welcomeText"></p>
-  <p id="lastPrayerInfo" class="last-info"></p>
-</div>
-
+  <div class="header">
+    <p id="lastPrayerInfo" class="last-info"></p>
+  </div>
 
   <div class="quran-verse">
     <div class="verse-text">
       "إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا"
     </div>
     <div class="verse-reference">سورة النساء - آية 103</div>
+  </div>
+
+  <div class="prayer-time-info" id="prayerTimeInfo">
+    جاري تحميل أوقات الصلاة...
   </div>
 
   <div class="stats" id="stats">
@@ -711,13 +792,13 @@
     <div class="months" id="monthsHeader"></div>
     <div class="heatmap-wrapper">
       <div class="days">
+        <div class="day-label">الجمعة</div>
         <div class="day-label">السبت</div>
         <div class="day-label">الأحد</div>
         <div class="day-label">الاثنين</div>
         <div class="day-label">الثلاثاء</div>
         <div class="day-label">الأربعاء</div>
         <div class="day-label">الخميس</div>
-        <div class="day-label">الجمعة</div>
       </div>
 
       <div id="heatmap"></div>
@@ -751,280 +832,490 @@
 </div>
 
 <script>
- 
-const city = "Cairo";
-const country = "EG";
-const method = 5; // طريقة الحساب (مثل 5 = Egyptian General Authority)
-const prayers = ["الفجر", "الظهر", "العصر", "المغرب", "العشاء"];
-const ayat = [
-  { text: "وَأَقِمِ الصَّلَاةَ لِذِكْرِي", ref: "سورة طه: 14" },
-  { text: "إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ", ref: "سورة العنكبوت: 45" },
-  { text: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ * الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ", ref: "سورة المؤمنون: 1-2" },
-  { text: "وَالَّذِينَ هُمْ عَلَىٰ صَلَوَاتِهِمْ يُحَافِظُونَ", ref: "سورة المعارج: 34" },
-  { text: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ", ref: "سورة البقرة: 238" },
-  { text: "الصلاة عماد الدين، من أقامها فقد أقام الدين، ومن هدمها فقد هدم الدين", ref: "حديث شريف" },
-  { text: "بين الرجل وبين الشرك والكفر ترك الصلاة", ref: "رواه مسلم" },
-  { text: "أول ما يحاسب عليه العبد يوم القيامة الصلاة، فإن صلحت صلح سائر عمله", ref: "رواه الطبراني" },
-  { text: "من حافظ عليها كانت له نورًا وبرهانًا ونجاة يوم القيامة", ref: "رواه أحمد" },
-  { text: "ليس بين العبد والجنة إلا الصلاة", ref: "حديث شريف" }
-];
-
-const heatmap = document.getElementById("heatmap");
-const tooltip = document.getElementById("tooltip");
-const monthsHeader = document.getElementById("monthsHeader");
-const year = new Date().getFullYear();
-
-let userName = localStorage.getItem("userName");
-if(!userName){
-  userName = prompt("من فضلك أدخل اسمك 🙂");
-  if(userName && userName.trim() !== ""){
-    localStorage.setItem("userName", userName.trim());
-  } else {
-    userName = "ضيف";
-  }
-}
-document.getElementById("welcomeText").textContent = `مرحبًا بك، ${userName} 🌸`;
-
-// --- دالة جلب أوقات الصلاة ---
-async function getPrayerTimes() {
-  try {
-    const today = new Date();
-    const dateStr = `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`;
-    const url = `https://api.aladhan.com/v1/timingsByCity/${dateStr}?city=${city}&country=${country}&method=${method}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    const timings = data.data.timings;
-    return {
-      "الفجر": timings.Fajr,
-      "الظهر": timings.Dhuhr,
-      "العصر": timings.Asr,
-      "المغرب": timings.Maghrib,
-      "العشاء": timings.Isha
-    };
-  } catch (error) {
-    console.error("خطأ في جلب أوقات الصلاة:", error);
-    return null;
-  }
-}
-
-// تحويل وقت "HH:MM" إلى دقائق
-function timeStrToMinutes(timeStr) {
-  if (!timeStr) return 0;
-  timeStr = timeStr.replace(/[^0-9:]/g, "");
-  let [hour, minute] = timeStr.split(":").map(Number);
-  return hour * 60 + minute;
-}
-
-// --- تسجيل الصلاة حسب الوقت ---
-async function recordPrayer(dateKeyLocal) {
-  const now = new Date();
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
-  let lvl = parseInt(localStorage.getItem(dateKeyLocal) || 0);
-
-  const prayersTimesObj = await getPrayerTimes();
-  if(!prayersTimesObj) return;
-
-  const prayerPeriods = [
-    { name: "الفجر", start: timeStrToMinutes(prayersTimesObj["الفجر"]), end: timeStrToMinutes(prayersTimesObj["الظهر"]) },
-    { name: "الظهر", start: timeStrToMinutes(prayersTimesObj["الظهر"]), end: timeStrToMinutes(prayersTimesObj["العصر"]) },
-    { name: "العصر", start: timeStrToMinutes(prayersTimesObj["العصر"]), end: timeStrToMinutes(prayersTimesObj["المغرب"]) },
-    { name: "المغرب", start: timeStrToMinutes(prayersTimesObj["المغرب"]), end: timeStrToMinutes(prayersTimesObj["العشاء"]) },
-    { name: "العشاء", start: timeStrToMinutes(prayersTimesObj["العشاء"]), end: 24*60 + timeStrToMinutes(prayersTimesObj["الفجر"]) }
+  const city = "Cairo";
+  const country = "EG";
+  const method = 5;
+  const prayers = ["الفجر", "الظهر", "العصر", "المغرب", "العشاء"];
+  const ayat = [
+    { text: "وَأَقِمِ الصَّلَاةَ لِذِكْرِي", ref: "سورة طه: 14" },
+    { text: "إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ", ref: "سورة العنكبوت: 45" },
+    { text: "قَدْ أَفْلَحَ الْمُؤْمِنُونَ * الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ", ref: "سورة المؤمنون: 1-2" },
+    { text: "وَالَّذِينَ هُمْ عَلَىٰ صَلَوَاتِهِمْ يُحَافِظُونَ", ref: "سورة المعارج: 34" },
+    { text: "حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ", ref: "سورة البقرة: 238" },
+    { text: "الصلاة عماد الدين، من أقامها فقد أقام الدين، ومن هدمها فقد هدم الدين", ref: "حديث شريف" },
+    { text: "بين الرجل وبين الشرك والكفر ترك الصلاة", ref: "رواه مسلم" },
+    { text: "أول ما يحاسب عليه العبد يوم القيامة الصلاة، فإن صلحت صلح سائر عمله", ref: "رواه الطبراني" },
+    { text: "من حافظ عليها كانت له نورًا وبرهانًا ونجاة يوم القيامة", ref: "رواه أحمد" },
+    { text: "ليس بين العبد والجنة إلا الصلاة", ref: "حديث شريف" }
   ];
 
+  const heatmap = document.getElementById("heatmap");
+  const tooltip = document.getElementById("tooltip");
+  const monthsHeader = document.getElementById("monthsHeader");
+  const prayerTimeInfo = document.getElementById("prayerTimeInfo");
+  const year = new Date().getFullYear();
+  
+  document.getElementById("currentYear").textContent = year;
+
+  let userName = localStorage.getItem("userName");
+  if(!userName){
+    userName = prompt("من فضلك أدخل اسمك 🙂");
+    if(userName && userName.trim() !== ""){
+      localStorage.setItem("userName", userName.trim());
+    } else {
+      userName = "ضيف";
+    }
+  }
+  document.getElementById("welcomeText").textContent = `مرحبًا بك، ${userName} 🌸`;
+
+ 
+  let prayerTimesToday = null;
+  let prayerTimesTomorrow = null;
   let currentPrayerIndex = -1;
-  for (let i=0; i<prayerPeriods.length; i++) {
-    const p = prayerPeriods[i];
-    if (p.name !== "العشاء" && nowMinutes >= p.start && nowMinutes < p.end) {
-      currentPrayerIndex = i; break;
+  let nextPrayerTime = null;
+
+  async function getPrayerTimes(date = null) {
+    try {
+      const targetDate = date || new Date();
+      const dateStr = `${targetDate.getFullYear()}-${targetDate.getMonth()+1}-${targetDate.getDate()}`;
+      const url = `https://api.aladhan.com/v1/timingsByCity/${dateStr}?city=${city}&country=${country}&method=${method}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const timings = data.data.timings;
+      return {
+        "الفجر": timings.Fajr,
+        "الظهر": timings.Dhuhr,
+        "العصر": timings.Asr,
+        "المغرب": timings.Maghrib,
+        "العشاء": timings.Isha
+      };
+    } catch (error) {
+      console.error("خطأ في جلب أوقات الصلاة:", error);
+      return null;
     }
-    if (p.name === "العشاء" && (nowMinutes >= p.start || nowMinutes < timeStrToMinutes(prayersTimesObj["الفجر"]))) {
-      currentPrayerIndex = i; break;
+  }
+
+  // تحويل وقت "HH:MM" إلى دقائق
+  function timeStrToMinutes(timeStr) {
+    if (!timeStr) return 0;
+    timeStr = timeStr.replace(/[^0-9:]/g, "");
+    let [hour, minute] = timeStr.split(":").map(Number);
+    return hour * 60 + minute;
+  }
+
+  // تحويل الدقائق إلى نص "HH:MM"
+  function minutesToTimeStr(minutes) {
+    const hour = Math.floor(minutes / 60);
+    const minute = minutes % 60;
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+  }
+
+
+  function determineCurrentPrayer(prayerTimes) {
+    const now = new Date();
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    const fajrTime = timeStrToMinutes(prayerTimes["الفجر"]);
+    const dhuhrTime = timeStrToMinutes(prayerTimes["الظهر"]);
+    const asrTime = timeStrToMinutes(prayerTimes["العصر"]);
+    const maghribTime = timeStrToMinutes(prayerTimes["المغرب"]);
+    const ishaTime = timeStrToMinutes(prayerTimes["العشاء"]);
+    
+    if (nowMinutes >= fajrTime && nowMinutes < dhuhrTime) {
+      return { index: 0, name: "الفجر", nextIndex: 1, nextName: "الظهر", nextTime: dhuhrTime };
+    } else if (nowMinutes >= dhuhrTime && nowMinutes < asrTime) {
+      return { index: 1, name: "الظهر", nextIndex: 2, nextName: "العصر", nextTime: asrTime };
+    } else if (nowMinutes >= asrTime && nowMinutes < maghribTime) {
+      return { index: 2, name: "العصر", nextIndex: 3, nextName: "المغرب", nextTime: maghribTime };
+    } else if (nowMinutes >= maghribTime && nowMinutes < ishaTime) {
+      return { index: 3, name: "المغرب", nextIndex: 4, nextName: "العشاء", nextTime: ishaTime };
+    } else if (nowMinutes >= ishaTime || nowMinutes < fajrTime) {
+      if (nowMinutes >= ishaTime) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return { 
+          index: 4, 
+          name: "العشاء", 
+          nextIndex: 0, 
+          nextName: "الفجر", 
+          nextTime: fajrTime + 24*60, 
+          isNextDay: true 
+        };
+      } else {
+        return { index: -1, name: "قبل الفجر", nextIndex: 0, nextName: "الفجر", nextTime: fajrTime };
+      }
     }
+    
+    return { index: -1, name: "لا توجد صلاة حالية", nextIndex: 0, nextName: "الفجر", nextTime: fajrTime };
   }
 
-  if(currentPrayerIndex === -1){
-    alert("⏳ لا يمكنك تسجيل أي صلاة الآن."); return;
+  async function updatePrayerInfo() {
+    if (!prayerTimesToday) {
+      prayerTimesToday = await getPrayerTimes();
+    }
+    
+    if (!prayerTimesToday) {
+      prayerTimeInfo.innerHTML = "⚠️ تعذر جلب أوقات الصلاة";
+      return;
+    }
+    
+    const currentPrayer = determineCurrentPrayer(prayerTimesToday);
+    currentPrayerIndex = currentPrayer.index;
+    
+    let infoHTML = "";
+    
+    if (currentPrayer.index >= 0) {
+      const remainingTime = currentPrayer.nextTime - (new Date().getHours() * 60 + new Date().getMinutes());
+      const remainingHours = Math.floor(remainingTime / 60);
+      const remainingMinutes = remainingTime % 60;
+      
+      infoHTML = `
+        <span class="current-prayer">🕌 الصلاة الحالية: ${currentPrayer.name}</span><br>
+        ⏳ الوقت المتبقي للصلاة التالية (${currentPrayer.nextName}): 
+        ${remainingHours > 0 ? remainingHours + " ساعة و " : ""}${remainingMinutes} دقيقة
+      `;
+    } else if (currentPrayer.index === -1 && currentPrayer.name === "قبل الفجر") {
+      infoHTML = `
+        <span class="current-prayer">🌙 قبل وقت الفجر</span><br>
+        ⏰ الصلاة القادمة: الفجر الساعة ${prayerTimesToday["الفجر"]}
+      `;
+    }
+    
+    prayerTimeInfo.innerHTML = infoHTML;
+    
+    setTimeout(updatePrayerInfo, 30000);
   }
 
-  if(lvl > currentPrayerIndex){
-    alert(`✔️ لقد سجلت صلوات لاحقة بالفعل، لا يمكن تسجيل هذه الصلاة.`); return;
+  async function recordPrayer(dateKeyLocal) {
+    const now = new Date();
+    const today = new Date();
+    const todayKey = today.toISOString().split("T")[0];
+    
+    if (dateKeyLocal > todayKey) {
+      alert("⛔ لا يمكن تسجيل صلوات لأيام مستقبلية!");
+      return;
+    }
+    
+    if (dateKeyLocal < todayKey) {
+      alert("⛔ لا يمكن تعديل أيام ماضية! يمكنك فقط تسجيل صلوات اليوم.");
+      return;
+    }
+    
+    if (!prayerTimesToday) {
+      prayerTimesToday = await getPrayerTimes();
+      if (!prayerTimesToday) {
+        alert("⚠️ تعذر جلب أوقات الصلاة. حاول مرة أخرى.");
+        return;
+      }
+    }
+    
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    let currentLevel = parseInt(localStorage.getItem(todayKey) || 0);
+    
+    const currentPrayer = determineCurrentPrayer(prayerTimesToday);
+    
+    const prayerTimes = [
+      timeStrToMinutes(prayerTimesToday["الفجر"]),
+      timeStrToMinutes(prayerTimesToday["الظهر"]),
+      timeStrToMinutes(prayerTimesToday["العصر"]),
+      timeStrToMinutes(prayerTimesToday["المغرب"]),
+      timeStrToMinutes(prayerTimesToday["العشاء"])
+    ];
+    
+    if (currentPrayer.index < 0) {
+      alert("⏳ لم يحن وقت أي صلاة بعد. الصلاة القادمة: الفجر");
+      return;
+    }
+    
+    if (currentLevel > currentPrayer.index) {
+      alert(`✔️ لقد سجلت صلاة ${currentPrayer.name} بالفعل.`);
+      return;
+    }
+    
+    // 6. التحقق إذا كان الوقت قد تجاوز الصلاة السابقة ولم يسجلها
+    for (let i = 0; i < currentPrayer.index; i++) {
+      if (currentLevel <= i && nowMinutes > prayerTimes[i]) {
+        const prayerName = prayers[i];
+        alert(`⚠️ فاتتك صلاة ${prayerName}! يجب عليك قضاؤها.\n\nيمكنك تسجيل الصلاة الحالية فقط.`);
+        // break;
+      }
+    }
+    const newLevel = currentPrayer.index + 1;
+    localStorage.setItem(todayKey, newLevel);
+    renderCell(todayKey, newLevel);
+    
+    if (newLevel === 5) {
+      const ayah = ayat[Math.floor(Math.random() * ayat.length)];
+      document.getElementById("overlayText").textContent = `"${ayah.text}"`;
+      document.getElementById("overlayRef").textContent = ayah.ref;
+      document.getElementById("overlayAyah").style.display = "flex";
+    }
+    
+    tooltip.style.opacity = 1;
+    const timeString = now.toLocaleTimeString("ar-EG", {hour: "2-digit", minute: "2-digit"});
+    tooltip.innerHTML = `<strong>تم تسجيل صلاة ${currentPrayer.name}</strong><br>🕒 ${timeString}<br>الصلوات المسجلة: ${newLevel}/5`;
+    
+    updateStats();
+    updatePrayerStatus();
+    
+    setTimeout(() => {
+      tooltip.style.opacity = 0;
+    }, 3000);
   }
 
-  lvl = currentPrayerIndex + 1;
-  localStorage.setItem(dateKeyLocal, lvl);
-  renderCell(dateKeyLocal, lvl);
-
-  if(lvl === 5){
-    const ayah = ayat[Math.floor(Math.random() * ayat.length)];
-    document.getElementById("overlayText").textContent = `"${ayah.text}"`;
-    document.getElementById("overlayRef").textContent = ayah.ref;
-    document.getElementById("overlayAyah").style.display = "flex";
+  function updatePrayerStatus() {
+    const today = new Date();
+    const todayKey = today.toISOString().split("T")[0];
+    const level = parseInt(localStorage.getItem(todayKey) || 0);
+    
+    let statusText = "";
+    if (level === 0) {
+      statusText = "لم تسجل أي صلاة اليوم";
+    } else if (level === 5) {
+      statusText = "🎉 مبروك! أكملت جميع الصلوات اليوم";
+    } else {
+      const nextPrayer = prayers[level];
+      statusText = `✔️ سجلت ${level} صلاة/صلوات اليوم - الصلاة التالية: ${nextPrayer}`;
+    }
+    
+    document.getElementById("lastPrayerInfo").textContent = statusText;
   }
 
-  tooltip.style.opacity = 1;
-  const timeString = now.toLocaleTimeString("ar-EG",{hour:"2-digit",minute:"2-digit"});
-  tooltip.innerHTML = `<strong>تم تسجيل صلاة</strong><br>${prayers[currentPrayerIndex]}<br>🕒 ${timeString}`;
-  updateStats();
-}
+  const months = [
+    { name: "يناير", days: 31 },
+    { name: "فبراير", days: (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28 },
+    { name: "مارس", days: 31 },
+    { name: "أبريل", days: 30 },
+    { name: "مايو", days: 31 },
+    { name: "يونيو", days: 30 },
+    { name: "يوليو", days: 31 },
+    { name: "أغسطس", days: 31 },
+    { name: "سبتمبر", days: 30 },
+    { name: "أكتوبر", days: 31 },
+    { name: "نوفمبر", days: 30 },
+    { name: "ديسمبر", days: 31 }
+  ];
 
-// --- فحص الصلوات الفائتة ---
-async function checkMissedPrayers(){
-  const prayersTimesObj = await getPrayerTimes();
-  if(!prayersTimesObj) return;
-  const now = new Date();
-  const todayKey = now.toISOString().split("T")[0];
-  const missed = [];
-  const nowMinutes = now.getHours()*60 + now.getMinutes();
+  let currentDate = new Date();
+  let weekColumns = [];
+  let currentWeek = [];
+  const today = new Date();
+  const todayDateStr = today.toISOString().split("T")[0];
 
-  prayers.forEach((prayer, index)=>{
-    const level = parseInt(localStorage.getItem(todayKey)||0);
-    const prayerTime = timeStrToMinutes(prayersTimesObj[prayer]);
-    if(index >= level && nowMinutes > prayerTime){
-      missed.push(prayer);
+  let totalDays = 0;
+  months.forEach((month, index) => {
+    const monthDiv = document.createElement("div");
+    monthDiv.className = "month-label";
+    if (index > 0) monthDiv.classList.add("month-separator");
+    monthDiv.textContent = month.name;
+    monthDiv.style.width = `${(month.days / 7) * 18 + (month.days / 7 - 1) * 4}px`;
+    monthsHeader.appendChild(monthDiv);
+    
+    if (index > 0) {
+      const divider = document.createElement("div");
+      divider.className = "month-divider";
+      divider.style.left = `${totalDays * 22 - 2}px`;
+      document.querySelector(".heatmap-wrapper").appendChild(divider);
+    }
+    
+    totalDays += month.days;
+  });
+
+  let startDay = currentDate.getDay()+1;
+  let startOffset = (startDay === 6) ? 0 : startDay + 1;
+
+  for(let i = 0; i < startOffset; i++){
+    const emptyCell = document.createElement("div");
+    emptyCell.className = "day empty-day";
+    currentWeek.push(emptyCell);
+  }
+
+  months.forEach((month, mIndex) => {
+    for(let day = 1; day <= month.days; day++){
+      const cell = document.createElement("div");
+      const dateKey = currentDate.toISOString().split("T")[0];
+      let level = parseInt(localStorage.getItem(dateKey) || 0);
+      
+      if (dateKey > todayDateStr) {
+        cell.className = "day future-day";
+        cell.title = "يوم مستقبلي - غير متاح للتسجيل";
+      } else if (dateKey < todayDateStr) {
+        cell.className = "day past-day";
+        renderCell(dateKey, level, cell);
+        cell.addEventListener("click", () => {
+          alert("⛔ لا يمكن تعديل أيام ماضية!\n\nيمكنك فقط تسجيل صلوات اليوم الحالي.");
+        });
+      } else {
+        cell.className = "day today-active";
+        renderCell(dateKey, level, cell);
+        cell.addEventListener("click", () => recordPrayer(dateKey));
+        cell.classList.add("today");
+      }
+      
+      cell.dataset.date = dateKey;
+      
+      cell.addEventListener("mouseenter", (e)=>{
+        const level = parseInt(localStorage.getItem(dateKey)||0);
+        tooltip.style.opacity = 1;
+        const date = new Date(dateKey);
+        const dayName = date.toLocaleDateString("ar-EG", {weekday:'long'});
+        const dayNum = date.toLocaleDateString("ar-EG", {day:'numeric'});
+        const monthName = date.toLocaleDateString("ar-EG", {month:'long'});
+        
+        let prayerText = "";
+        if(level === 0) prayerText = "لا توجد صلوات مسجلة";
+        else if(level === 1) prayerText = "صلاة واحدة";
+        else if(level === 2) prayerText = "صلاتان";
+        else if(level === 3) prayerText = "3 صلوات";
+        else if(level === 4) prayerText = "4 صلوات";
+        else if(level === 5) prayerText = "5 صلوات ✓";
+        
+        tooltip.innerHTML = `<strong>${dayName} ${dayNum} ${monthName}</strong><br>${prayerText}`;
+        
+        const rect = e.target.getBoundingClientRect();
+        const tooltipWidth = 220;
+        
+        let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        let top = rect.top - 100;
+        
+        if (top < 20) {
+          top = rect.bottom + 10;
+        }
+        
+        if (left + tooltipWidth > window.innerWidth) {
+          left = window.innerWidth - tooltipWidth - 10;
+        }
+        
+        if (left < 10) {
+          left = 10;
+        }
+        
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+      });
+      
+      cell.addEventListener("mousemove", (e)=>{
+        const rect = e.target.getBoundingClientRect();
+        const tooltipWidth = 220;
+        
+        let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+        let top = rect.top - 100;
+        
+        if (top < 20) {
+          top = rect.bottom + 10;
+        }
+        
+        if (left + tooltipWidth > window.innerWidth) {
+          left = window.innerWidth - tooltipWidth - 10;
+        }
+        
+        if (left < 10) {
+          left = 10;
+        }
+        
+        tooltip.style.left = left + "px";
+        tooltip.style.top = top + "px";
+      });
+      
+      cell.addEventListener("mouseleave", ()=>{
+        tooltip.style.opacity = 0;
+      });
+      
+      currentWeek.push(cell);
+      
+      if(currentWeek.length === 7){
+        weekColumns.push(currentWeek);
+        currentWeek = [];
+      }
+      
+      currentDate.setDate(currentDate.getDate() + 1);
     }
   });
 
-  if(missed.length > 0){
-    alert(`⚠️ لم تسجل الصلوات التالية اليوم: ${missed.join(", ")}`);
-  }
-}
-setInterval(checkMissedPrayers, 10*60*1000);
-
-// --- بناء الـ heatmap ---
-const months = [
-  { name: "يناير", days: 31 },
-  { name: "فبراير", days: (year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)) ? 29 : 28 },
-  { name: "مارس", days: 31 },
-  { name: "أبريل", days: 30 },
-  { name: "مايو", days: 31 },
-  { name: "يونيو", days: 30 },
-  { name: "يوليو", days: 31 },
-  { name: "أغسطس", days: 31 },
-  { name: "سبتمبر", days: 30 },
-  { name: "أكتوبر", days: 31 },
-  { name: "نوفمبر", days: 30 },
-  { name: "ديسمبر", days: 31 }
-];
-
-let currentDate = new Date();
-let weekColumns = [];
-let currentWeek = [];
-let startDay = currentDate.getDay();
-let startOffset = startDay === 6 ? 0 : startDay + 1;
-
-for(let i=0;i<startOffset;i++){
-  const emptyCell = document.createElement("div");
-  emptyCell.className="day empty-day";
-  currentWeek.push(emptyCell);
-}
-
-months.forEach((month, mIndex)=>{
-  for(let i=0;i<month.days;i++){
-    const cell = document.createElement("div");
-    cell.className="day";
-    const dateKey = currentDate.toISOString().split("T")[0];
-    let level = parseInt(localStorage.getItem(dateKey)||0);
-
-    renderCell(dateKey, level, cell);
-
-    cell.addEventListener("click", ()=> recordPrayer(dateKey));
-
-    cell.dataset.date = dateKey;
-    cell.addEventListener("mouseenter", ()=>{
-      const level = parseInt(localStorage.getItem(dateKey)||0);
-      tooltip.style.opacity = 1;
-      const date = new Date(dateKey);
-      const dayName = date.toLocaleDateString("ar-EG", {weekday:'long'});
-      const dayNum = date.toLocaleDateString("ar-EG", {day:'numeric'});
-      const monthName = date.toLocaleDateString("ar-EG", {month:'long'});
-
-      let prayerText = "";
-      if(level === 0) prayerText = "لا توجد صلوات مسجلة";
-      else if(level === 1) prayerText = "صلاة واحدة";
-      else if(level === 2) prayerText = "صلاتان";
-      else if(level === 3) prayerText = "3 صلوات";
-      else if(level === 4) prayerText = "4 صلوات";
-      else if(level === 5) prayerText = "5 صلوات ✓";
-
-      tooltip.innerHTML=`<strong>${dayName} ${dayNum} ${monthName}</strong><br>${prayerText}`;
-    });
-    cell.addEventListener("mousemove",(e)=>{
-      tooltip.style.left=e.pageX+10+"px";
-      tooltip.style.top=e.pageY+10+"px";
-    });
-    cell.addEventListener("mouseleave",()=>{tooltip.style.opacity=0;});
-
-    currentWeek.push(cell);
-    if(currentWeek.length===7){
-      weekColumns.push(currentWeek);
-      currentWeek=[];
+  if(currentWeek.length > 0){
+    while(currentWeek.length < 7){
+      const emptyCell = document.createElement("div");
+      emptyCell.className = "day empty-day";
+      currentWeek.push(emptyCell);
     }
-    currentDate.setDate(currentDate.getDate()+1);
+    weekColumns.push(currentWeek);
   }
-});
 
-if(currentWeek.length>0){
-  while(currentWeek.length<7){
-    const emptyCell = document.createElement("div");
-    emptyCell.className="day empty-day";
-    currentWeek.push(emptyCell);
+
+  weekColumns.forEach(week => {
+    const weekCol = document.createElement("div");
+    weekCol.className = "week-column";
+    week.forEach(day => weekCol.appendChild(day));
+    heatmap.appendChild(weekCol);
+  });
+
+  function renderCell(dateKey, level, cell=null){
+    if(!cell){
+      cell = [...document.querySelectorAll(".day")].find(c=>c.dataset.date===dateKey);
+    }
+    if(!cell) return;
+    
+    cell.classList.remove("l1", "l2", "l3", "l4", "l5");
+    
+    if(level > 0) {
+      cell.classList.add("l"+level);
+    }
   }
-  weekColumns.push(currentWeek);
-}
 
-weekColumns.forEach(week=>{
-  const weekCol=document.createElement("div");
-  weekCol.className="week-column";
-  week.forEach(day=>weekCol.appendChild(day));
-  heatmap.appendChild(weekCol);
-});
-
-// --- دوال مساعدة ---
-function renderCell(dateKey, level, cell=null){
-  if(!cell){
-    cell = [...document.querySelectorAll(".day")].find(c=>c.dataset.date===dateKey);
+  function updateStats() {
+    let totalPrayers = 0;
+    let perfectDays = 0;
+    let currentStreak = 0;
+    let tempStreak = 0;
+    
+    const today = new Date();
+    let checkDate = new Date(`${year}-01-01`);
+    
+    while(checkDate <= today){
+      const dateKey = checkDate.toISOString().split("T")[0];
+      const level = parseInt(localStorage.getItem(dateKey) || 0);
+      totalPrayers += level;
+      
+      if(level === 5){
+        perfectDays++;
+        tempStreak++;
+        currentStreak = tempStreak;
+      } else {
+        tempStreak = 0;
+      }
+      
+      checkDate.setDate(checkDate.getDate()+1);
+    }
+    
+    document.getElementById('totalPrayers').textContent = totalPrayers;
+    document.getElementById('perfectDays').textContent = perfectDays;
+    document.getElementById('currentStreak').textContent = currentStreak;
   }
-  if(!cell) return;
-  cell.className="day";
-  if(level>0) cell.classList.add("l"+level);
-}
 
-function updateStats() {
-  let totalPrayers = 0;
-  let perfectDays = 0;
-  let currentStreak = 0;
-  const today = new Date();
-  let checkDate = new Date(`${year}-01-01`);
-  while(checkDate <= today){
-    const dateKey = checkDate.toISOString().split("T")[0];
-    const level = parseInt(localStorage.getItem(dateKey) || 0);
-    totalPrayers += level;
-    if(level === 5){ perfectDays++; currentStreak++; }
-    else if(checkDate < today){ currentStreak = 0; }
-    checkDate.setDate(checkDate.getDate()+1);
+  function resetData(){
+    if(confirm("هل أنت متأكد من مسح جميع البيانات؟\n\n⚠️ سيتم حذف جميع سجلات الصلوات ولا يمكن استعادتها.")){
+      localStorage.clear();
+      location.reload();
+    }
   }
-  document.getElementById('totalPrayers').textContent = totalPrayers;
-  document.getElementById('perfectDays').textContent = perfectDays;
-  document.getElementById('currentStreak').textContent = currentStreak;
-}
 
-function resetData(){
-  if(confirm("هل أنت متأكد من مسح جميع البيانات؟")){
-    localStorage.clear();
-    location.reload();
+  function closeOverlay() {
+    document.getElementById("overlayAyah").style.display = "none";
   }
-}
 
-function closeOverlay() {
-  document.getElementById("overlayAyah").style.display = "none";
-}
+  async function initializeApp() {
+    prayerTimesToday = await getPrayerTimes();
+    
+    updateStats();
+    updatePrayerStatus();
+    if (prayerTimesToday) {
+      updatePrayerInfo();
+    }
+    
+    setInterval(updatePrayerStatus, 5 * 60 * 1000);
+  }
 
-updateStats();
-checkMissedPrayers();
-
-
+  initializeApp();
 </script>
 </body>
 </html>
- 
